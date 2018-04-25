@@ -424,13 +424,18 @@ def configure_ovs():
 
 
 def enable_ipfix():
+    '''Determine whether ipfix is enabled and supported'''
     return (config('ipfix-target'))
 
 def configure_ipfix():
+    '''Configure and enable ipfix for OVS Bridges.
+
+       This function only does runtime configuration!
+    '''
     mydata = config('data-port')
     obs_domain_id = config('obs-domain-id')
     obs_point_id = config('obs-point-id')
-    if not enable_netflow():
+    if not enable_ipfix():
         command = [
             'ovs-vsctl', 'clear', 'Bridge', 'br-int', 'ipfix'
         ]
