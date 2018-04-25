@@ -38,6 +38,7 @@ from neutron_ovs_utils import (
     OVS_DEFAULT,
     configure_ovs,
     configure_sriov,
+    configure_ipfix,
     get_shared_secret,
     register_configs,
     restart_map,
@@ -89,6 +90,7 @@ def config_changed():
     CONFIGS.write_all()
     # NOTE(fnordahl): configure_sriov must be run after CONFIGS.write_all()
     # to allow us to enable boot time execution of init script
+    configure_ipfix()
     configure_sriov()
     for rid in relation_ids('neutron-plugin'):
         neutron_plugin_joined(relation_id=rid)

@@ -212,3 +212,9 @@ options:
       segments, a space-delimited list of a.b.c.d/x can be provided
       The address of the first network found to have an address
       configured will be used.
+   ipfix-target:
+    type: string
+    default: ""
+    description: |
+     ipfix target.  Format is "IP_Address:Port".  Setting this
+     option will enable ipfix on br-int.

@@ -160,6 +160,10 @@ class OVSPluginContext(context.NeutronContext):
                 ','.join(sriov_mappings.split())
             )
 
+        enable_netflow = config('enable-ipfix')
+        if enable_ipfix:
+            ovs_ctxt['enable_ipfix'] = True
+
         enable_sriov = config('enable-sriov')
         if enable_sriov:
             ovs_ctxt['enable_sriov'] = True

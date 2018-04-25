@@ -423,6 +423,51 @@ def configure_ovs():
     service_restart('os-charm-phy-nic-mtu')
 
 
+def enable_ipfix():
+    return (config('ipfix-target'))
+
+def configure_ipfix():
+    mydata = config('data-port')
+    obs_domain_id = config('obs-domain-id')
+    obs_point_id = config('obs-point-id')
+    if not enable_netflow():
+        command = [
+            'ovs-vsctl', 'clear', 'Bridge', 'br-int', 'ipfix'
+        ]
+        log('Disabling ipfix on br-int')
+        subprocess.check_call(command)
+        if len(mydata) > 0:
+            for portlist in mydata.split():
+                mybr = portlist.split(':')[0]
+                command = [
+                    'ovs-vsctl', 'clear', 'Bridge', mybr,
+                    'ipfix'
+                ]
+                log('Disabling ipfix on ' + mybr)
+                subprocess.check_call(command)
+    else:
+        if len(mydata) > 0:
+            for portlist in mydata.split():
+                mybr = portlist.split(':')[0]
+                command = [
+                    'ovs-vsctl', 'set', 'Bridge', mybr,
+                    'ipfix=@i', '--', '--id=@i', 'create', 'IPFIX',
+                    'targets=\"' + config('ipfix-target') + '\"',
+                    'obs_domain_id=' + obs_domain_id,
+                    'obs_point_id=' + obs_point_id
+                ]
+                log('Enabling ipfix on ' + mybr)
+                subprocess.check_call(command)
+        command = [
+                'ovs-vsctl', 'set', 'Bridge', mybr,
+                'ipfix=@i', '--', '--id=@i', 'create', 'IPFIX',
+                'targets=\"' + config('ipfix-target') + '\"',
+                'obs_domain_id=' + obs_domain_id,
+                'obs_point_id=' + obs_point_id
+        ]
+        log('Enabling ipfix on br-int')
+        subprocess.check_call(command)
+
 def configure_sriov():
     '''Configure SR-IOV devices based on provided configuration options
 
